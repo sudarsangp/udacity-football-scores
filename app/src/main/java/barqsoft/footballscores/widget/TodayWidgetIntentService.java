@@ -1,5 +1,6 @@
 package barqsoft.footballscores.widget;
 
+import android.annotation.TargetApi;
 import android.app.IntentService;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -7,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RemoteViews;
@@ -64,7 +66,9 @@ public class TodayWidgetIntentService extends IntentService {
         for (int appWidgetId : appWidgetIds) {
 
             RemoteViews views = new RemoteViews(getPackageName(), R.layout.scores_list_item);
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                setRemoteContentDescription(views, "today widget");
+            }
             views.setTextViewText(R.id.home_name,data.getString(COL_HOME));
             views.setTextViewText(R.id.away_name, data.getString(COL_AWAY));
             views.setTextViewText(R.id.score_textview,
@@ -81,5 +85,10 @@ public class TodayWidgetIntentService extends IntentService {
             views.setOnClickPendingIntent(R.id.today_widget, pendingIntent);
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+    private void setRemoteContentDescription(RemoteViews views, String description) {
+        views.setContentDescription(R.id.today_widget, description);
     }
 }
